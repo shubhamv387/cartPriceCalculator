@@ -15,7 +15,7 @@ form.addEventListener("submit", (e) => {
 
   axios
     .post(
-      "https://crudcrud.com/api/061c925450594488937c9bdd62cb1150/productDatas",
+      "https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas",
       productObj
     )
     .then((response) => {
@@ -41,6 +41,7 @@ function showDataOnScreen(productObj) {
 
   let delBtn = document.createElement("button");
   delBtn.className = "btn btn-danger btn-sm";
+  delBtn.style.height = "fit-content";
 
   delBtn.innerHTML = "DELETE";
 
@@ -50,13 +51,13 @@ function showDataOnScreen(productObj) {
   delBtn.addEventListener("click", () => {
     axios
       .delete(
-        `https://crudcrud.com/api/061c925450594488937c9bdd62cb1150/productDatas/${productObj._id}`
+        `https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas/${productObj._id}`
       )
       .then((response) => {
         let totalPrice = 0;
         axios
           .get(
-            "https://crudcrud.com/api/061c925450594488937c9bdd62cb1150/productDatas"
+            "https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas"
           )
           .then((response) => {
             for (let i = 0; i < response.data.length; i++) {
@@ -77,7 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
   let totalPrice = 0;
   axios
     .get(
-      "https://crudcrud.com/api/061c925450594488937c9bdd62cb1150/productDatas"
+      "https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas"
     )
     .then((response) => {
       for (let i = 0; i < response.data.length; i++) {
