@@ -1,3 +1,28 @@
+let totalPrice = 0;
+
+// Getting all the products and total price
+window.addEventListener("DOMContentLoaded", () => {
+  axios
+    .get(
+      "https://crudcrud.com/api/a6af72f4594c449d97b61484f5cf8006/productDatas"
+    )
+    .then((response) => {
+      for (let i = 0; i < response.data.length; i++) {
+        // console.log(response.data[i]);
+        totalPrice += Number(response.data[i].productPrice);
+        showDataOnScreen(response.data[i]);
+      }
+      document.getElementById("price").innerText = rupee.format(totalPrice);
+    })
+    .catch((err) => console.log(err));
+});
+
+// format number to Indian rupee
+let rupee = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+});
+
 const form = document.getElementById("form");
 
 form.addEventListener("submit", (e) => {
@@ -6,7 +31,7 @@ form.addEventListener("submit", (e) => {
   const inputName = document.getElementById("inputProductName");
   let showTotalPrice = document.getElementById("price");
 
-  let totalPrice = Number(showTotalPrice.innerText) + Number(inputPrice.value);
+  totalPrice += parseInt(inputPrice.value);
 
   let productObj = {
     productName: inputName.value.trim(),
@@ -15,13 +40,13 @@ form.addEventListener("submit", (e) => {
 
   axios
     .post(
-      "https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas",
+      "https://crudcrud.com/api/a6af72f4594c449d97b61484f5cf8006/productDatas",
       productObj
     )
     .then((response) => {
       //   console.log(response.data);
       showDataOnScreen(response.data);
-      showTotalPrice.innerText = totalPrice;
+      showTotalPrice.innerText = rupee.format(totalPrice);
 
       inputName.value = "";
       inputPrice.value = "";
@@ -35,7 +60,11 @@ function showDataOnScreen(productObj) {
   product.className =
     "d-flex justify-content-between list-group-item text-capitalize list-group-item-warning";
 
-  product.innerHTML = `<span><span class="fw-bold">Name: </span>${productObj.productName},<span class="fw-bold"> Price: </span> ${productObj.productPrice} INR</span>`;
+  product.innerHTML = `<span><span class="fw-bold">Name: </span>${
+    productObj.productName
+  },<span class="fw-bold"> Price: </span> ${rupee.format(
+    productObj.productPrice
+  )}</span>`;
 
   //   console.log(product);
 
@@ -51,42 +80,13 @@ function showDataOnScreen(productObj) {
   delBtn.addEventListener("click", () => {
     axios
       .delete(
-        `https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas/${productObj._id}`
+        `https://crudcrud.com/api/a6af72f4594c449d97b61484f5cf8006/productDatas/${productObj._id}`
       )
       .then((response) => {
-        let totalPrice = 0;
-        axios
-          .get(
-            "https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas"
-          )
-          .then((response) => {
-            for (let i = 0; i < response.data.length; i++) {
-              // console.log(response.data[i]);
-              totalPrice += Number(response.data[i].productPrice);
-            }
-            document.getElementById("price").innerText = totalPrice;
-          })
-          .catch((err) => console.log(err));
-
+        totalPrice -= parseInt(productObj.productPrice);
+        document.getElementById("price").innerText = rupee.format(totalPrice);
         productList.removeChild(product);
       })
       .catch((err) => console.log(err));
   });
 }
-
-window.addEventListener("DOMContentLoaded", () => {
-  let totalPrice = 0;
-  axios
-    .get(
-      "https://crudcrud.com/api/b877a7f249ea45508355a3874540c0f0/productDatas"
-    )
-    .then((response) => {
-      for (let i = 0; i < response.data.length; i++) {
-        // console.log(response.data[i]);
-        totalPrice += Number(response.data[i].productPrice);
-        showDataOnScreen(response.data[i]);
-      }
-      document.getElementById("price").innerText = totalPrice;
-    })
-    .catch((err) => console.log(err));
-});
