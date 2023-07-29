@@ -4,7 +4,7 @@ let totalPrice = 0;
 window.addEventListener("DOMContentLoaded", () => {
   axios
     .get(
-      "https://crudcrud.com/api/a6af72f4594c449d97b61484f5cf8006/productDatas"
+      "https://crudcrud.com/api/2f88ff83512a4552939fa714ccf8280e/productDatas"
     )
     .then((response) => {
       for (let i = 0; i < response.data.length; i++) {
@@ -40,7 +40,7 @@ form.addEventListener("submit", (e) => {
 
   axios
     .post(
-      "https://crudcrud.com/api/a6af72f4594c449d97b61484f5cf8006/productDatas",
+      "https://crudcrud.com/api/2f88ff83512a4552939fa714ccf8280e/productDatas",
       productObj
     )
     .then((response) => {
@@ -62,7 +62,7 @@ function showDataOnScreen(productObj) {
 
   product.innerHTML = `<span><span class="fw-bold">Name: </span>${
     productObj.productName
-  },<span class="fw-bold"> Price: </span> ${rupee.format(
+  }<span class="fw-bold">, Price: </span> ${rupee.format(
     productObj.productPrice
   )}</span>`;
 
@@ -80,7 +80,7 @@ function showDataOnScreen(productObj) {
   delBtn.addEventListener("click", () => {
     axios
       .delete(
-        `https://crudcrud.com/api/a6af72f4594c449d97b61484f5cf8006/productDatas/${productObj._id}`
+        `https://crudcrud.com/api/2f88ff83512a4552939fa714ccf8280e/productDatas/${productObj._id}`
       )
       .then((response) => {
         totalPrice -= parseInt(productObj.productPrice);
@@ -90,3 +90,32 @@ function showDataOnScreen(productObj) {
       .catch((err) => console.log(err));
   });
 }
+
+// Ading a filter feature
+const filter = document.getElementById("filter");
+
+filter.addEventListener("keyup", (e) => {
+  // console.log(filter.value.trim());
+  const productList = document.getElementById("productList");
+  const product = productList.getElementsByTagName("li");
+
+  // convert text to lowercase
+  var text = e.target.value.toLowerCase().trim();
+
+  // Creating array from HTML Collections
+  productArray = Array.from(product);
+
+  productArray.forEach((e) => {
+    if (
+      e.childNodes[0].childNodes[1].textContent
+        .trim()
+        .toLowerCase()
+        .indexOf(text) == -1
+    ) {
+      e.className = "d-none";
+    } else {
+      e.className =
+        "d-flex justify-content-between list-group-item text-capitalize list-group-item-warning";
+    }
+  });
+});
