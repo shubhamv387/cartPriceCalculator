@@ -4,7 +4,7 @@ let totalPrice = 0;
 window.addEventListener("DOMContentLoaded", () => {
   axios
     .get(
-      "https://crudcrud.com/api/2f88ff83512a4552939fa714ccf8280e/productDatas"
+      "https://crudcrud.com/api/195cc43916c64c0dbabf8b624c2e3486/productDatas"
     )
     .then((response) => {
       for (let i = 0; i < response.data.length; i++) {
@@ -40,7 +40,7 @@ form.addEventListener("submit", (e) => {
 
   axios
     .post(
-      "https://crudcrud.com/api/2f88ff83512a4552939fa714ccf8280e/productDatas",
+      "https://crudcrud.com/api/195cc43916c64c0dbabf8b624c2e3486/productDatas",
       productObj
     )
     .then((response) => {
@@ -80,7 +80,7 @@ function showDataOnScreen(productObj) {
   delBtn.addEventListener("click", () => {
     axios
       .delete(
-        `https://crudcrud.com/api/2f88ff83512a4552939fa714ccf8280e/productDatas/${productObj._id}`
+        `https://crudcrud.com/api/195cc43916c64c0dbabf8b624c2e3486/productDatas/${productObj._id}`
       )
       .then((response) => {
         totalPrice -= parseInt(productObj.productPrice);
@@ -100,7 +100,7 @@ filter.addEventListener("keyup", (e) => {
   const product = productList.getElementsByTagName("li");
 
   // convert text to lowercase
-  var text = e.target.value.toLowerCase().trim();
+  var text = String(e.target.value.toLowerCase().trim());
 
   // Creating array from HTML Collections
   productArray = Array.from(product);
@@ -110,7 +110,8 @@ filter.addEventListener("keyup", (e) => {
       e.childNodes[0].childNodes[1].textContent
         .trim()
         .toLowerCase()
-        .indexOf(text) == -1
+        .indexOf(text) === -1 &&
+      e.childNodes[0].childNodes[3].textContent.trim().indexOf(text) === -1
     ) {
       e.className = "d-none";
     } else {
