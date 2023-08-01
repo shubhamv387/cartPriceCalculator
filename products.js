@@ -1,10 +1,16 @@
+// format number to Indian rupee
+let rupee = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+});
+
 let totalPrice = 0;
 
 // Getting all the products and total price
 window.addEventListener("DOMContentLoaded", () => {
   axios
     .get(
-      "https://crudcrud.com/api/195cc43916c64c0dbabf8b624c2e3486/productDatas"
+      "https://crudcrud.com/api/c0f004edf76f441f9a2b3837f101d568/productDatas"
     )
     .then((response) => {
       for (let i = 0; i < response.data.length; i++) {
@@ -14,13 +20,10 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       document.getElementById("price").innerText = rupee.format(totalPrice);
     })
-    .catch((err) => console.log(err));
-});
-
-// format number to Indian rupee
-let rupee = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
+    .catch((err) => {
+      document.getElementById("price").innerText = rupee.format(totalPrice);
+      console.log(err.message);
+    });
 });
 
 const form = document.getElementById("form");
@@ -40,7 +43,7 @@ form.addEventListener("submit", (e) => {
 
   axios
     .post(
-      "https://crudcrud.com/api/195cc43916c64c0dbabf8b624c2e3486/productDatas",
+      "https://crudcrud.com/api/c0f004edf76f441f9a2b3837f101d568/productDatas",
       productObj
     )
     .then((response) => {
@@ -51,7 +54,7 @@ form.addEventListener("submit", (e) => {
       inputName.value = "";
       inputPrice.value = "";
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(err.message));
 });
 
 function showDataOnScreen(productObj) {
@@ -80,27 +83,60 @@ function showDataOnScreen(productObj) {
   delBtn.addEventListener("click", () => {
     axios
       .delete(
-        `https://crudcrud.com/api/195cc43916c64c0dbabf8b624c2e3486/productDatas/${productObj._id}`
+        `https://crudcrud.com/api/c0f004edf76f441f9a2b3837f101d568/productDatas/${productObj._id}`
       )
       .then((response) => {
         totalPrice -= parseInt(productObj.productPrice);
         document.getElementById("price").innerText = rupee.format(totalPrice);
         productList.removeChild(product);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err.message));
   });
 }
 
 // Ading a filter feature
 const filter = document.getElementById("filter");
 
-filter.addEventListener("keyup", (e) => {
+filter.addEventListener("keyup", async (e) => {
   // console.log(filter.value.trim());
   const productList = document.getElementById("productList");
-  const product = productList.getElementsByTagName("li");
+  const productListPopUp = document.getElementById("productListPopUp");
+  productListPopUp.innerHTML = "";
 
   // convert text to lowercase
-  var text = String(e.target.value.toLowerCase().trim());
+  var text = e.target.value.toLowerCase().trim();
+
+  //Filtering from crudcrud backend data directly
+  if (!text) productListPopUp.className = "d-none";
+  else productListPopUp.className = "list-group shadow";
+
+  await axios
+    .get(
+      `https://crudcrud.com/api/c0f004edf76f441f9a2b3837f101d568/productDatas`
+    )
+    .then((res) => {
+      for (let i = 0; i < res.data.length; i++) {
+        if (
+          res.data[i].productName.trim().toLowerCase().indexOf(text) !== -1 ||
+          res.data[i].productPrice.trim().toLowerCase().indexOf(text) !== -1
+        ) {
+          const product = document.createElement("li");
+          product.className =
+            "d-flex fs-5 justify-content-between list-group-item text-capitalize list-group-item-warning";
+
+          product.innerHTML = `<span><span class="fw-bold">Name: </span>${
+            res.data[i].productName
+          }<span class="fw-bold">, Price: </span> ${rupee.format(
+            res.data[i].productPrice
+          )}</span>`;
+          productListPopUp.appendChild(product);
+        }
+      }
+    })
+    .catch((err) => console.log(err.message));
+
+  // Filtering from onscreen data
+  const product = productList.getElementsByTagName("li");
 
   // Creating array from HTML Collections
   productArray = Array.from(product);
